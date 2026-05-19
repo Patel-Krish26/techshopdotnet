@@ -1,0 +1,341 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Orders - Tech Shop</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* 🌈 SAME BACKGROUND AS HOME */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link {
+            transition: 0.3s;
+        }
+
+            .nav-link:hover {
+                color: #ffdd59 !important;
+                transform: scale(1.1);
+            }
+
+        /* ORDER CARD */
+        .order-card {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            transition: 0.4s;
+        }
+
+            .order-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            }
+
+        /* ORDER HEADER */
+        .order-header {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+
+        /* ITEM ROW */
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+            /* IMAGE */
+            .order-item img {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+        /* CARD */
+        .order-card {
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            transition: 0.4s;
+        }
+
+            .order-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            }
+
+        /* HEADER */
+        .order-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* STATUS BADGE */
+        .status-badge {
+            background: linear-gradient(135deg, #00ffcc, #00c6ff);
+            color: black;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* ITEMS */
+        .order-items {
+            margin-top: 10px;
+            height :250px;
+            overflow :auto;
+        }
+
+        /* SUMMARY */
+        .order-summary {
+            font-size: 0.95rem;
+        }
+
+        /* TOTAL ROW */
+        .total-row {
+            margin-top: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+        /* TEXT COLORS */
+        .price {
+            color: #ffdd59;
+            font-weight: bold;
+        }
+
+        .total {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        /* SCROLL ANIMATION */
+        .fade-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: 0.6s;
+        }
+
+            .fade-scroll.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top mb-5">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="index.html">Tech Shop</a>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="nav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" id="logoutLink">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="container mt-5 p-5">
+        <h1 class="text-center m-4 p-4 text-black fw-bold text-center">Your Orders</h1>
+
+        <div id="orders-body" class="row g-4"></div>
+
+    </div>
+
+    <script>
+
+        const ordersBody = document.getElementById('orders-body');
+
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        const userId = localStorage.getItem('userId');
+
+        if (!user || !userId) {
+            alert('Please login');
+            window.location.href = 'login.html';
+        }
+
+        /* FETCH ORDERS */
+        async function fetchOrders() {
+            try {
+
+                const res = await fetch(`https://techshopapi.onrender.com/api/Order/${userId}`);
+                const orders = await res.json();
+
+                // Fetch items for each order
+                for (let o of orders) {
+                    try {
+                        const itemsRes = await fetch(`https://techshopapi.onrender.com/api/Order/details/${o.orderId}`);
+                        o.items = await itemsRes.json();
+                    } catch {
+                        o.items = [];
+                    }
+                }
+
+                ordersBody.innerHTML = '';
+
+                if (orders.length === 0) {
+                    ordersBody.innerHTML = `
+                    <div class="text-center text-white py-5">
+                        <h4>No orders found</h4>
+                    </div>`;
+                    return;
+                }
+
+                orders.forEach(order => {
+
+                    let itemsHTML = '';
+
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+
+                            const price = item.price || 0;
+                            const qty = item.qty || 1;
+                            const total = price * qty;
+
+                            itemsHTML += `
+                            <div class="order-item">
+                                <img src="${item.productImg || 'https://via.placeholder.com/60'}">
+
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">${item.productName}</div>
+                                    <small class="text-white">Qty: ${qty}</small>
+                                </div>
+
+                                <div class="text-end">
+                                    <div class="price">₹${price}</div>
+                                    <div class="total">₹${total.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `;
+                        });
+                    }
+
+                    ordersBody.innerHTML += `
+                  <div class="col-md-6">
+    <div class="order-card fade-scroll">
+
+        <!-- HEADER -->
+        <div class="order-header d-flex justify-content-between align-items-center">
+
+            <div>
+                <h6 class="mb-1 fw-bold fw-italic">Order #${order.orderId}</h6>
+                <small class="text-white">
+                    ${new Date(order.orderDate).toLocaleString()}
+                </small>
+            </div>
+
+            <!-- STATUS BADGE -->
+            <span class="status-badge">Delivered</span>
+
+        </div>
+
+        <!-- ITEMS -->
+        <div class="order-items">
+            ${itemsHTML}
+        </div>
+
+        <hr class="my-3">
+
+        <!-- SUMMARY -->
+        <div class="order-summary">
+
+            <div class="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <span class="text-light">₹${(order.subTotal || 0).toFixed(2)}</span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <span>Shipping</span>
+                <span class="text-info">₹${(order.shipping || 0).toFixed(2)}</span>
+            </div>
+
+            <div class="d-flex justify-content-between total-row">
+                <span>Total</span>
+                <span>₹${(order.total || 0).toFixed(2)}</span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+                `;
+                });
+
+                /* SCROLL ANIMATION */
+                setTimeout(() => {
+                    document.querySelectorAll('.fade-scroll').forEach(el => {
+                        observer.observe(el);
+                    });
+                }, 300);
+
+            } catch (err) {
+                console.error(err);
+                ordersBody.innerHTML = `
+                <div class="text-center text-danger py-5">
+                    Failed to load orders
+                </div>`;
+            }
+        }
+
+        /* ANIMATION OBSERVER */
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('show');
+                }
+            });
+        });
+
+        /* LOGOUT */
+        document.getElementById('logoutLink').addEventListener('click', function () {
+            localStorage.removeItem('loggedInUser');
+            alert('Logged out successfully!');
+            window.location.href = 'index.html';
+        });
+
+        /* LOAD */
+        window.onload = fetchOrders;
+
+    </script>
+
+</body>
+</html>

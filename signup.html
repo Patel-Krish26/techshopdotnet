@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signup - Tech Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(8px);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            color: #fff !important;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+
+            .nav-link:hover {
+                color: #ffdd59 !important;
+                transform: scale(1.1);
+            }
+
+        /* Card / Form Styling */
+        .logsign-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 15px 50px;
+        }
+
+        .signupCard {
+            max-width: 450px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            overflow: hidden;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+            .signupCard .card-body {
+                padding: 2rem;
+            }
+
+            .signupCard h2 {
+                font-weight: 700;
+                letter-spacing: 1px;
+                color: #fff;
+            }
+
+        .signupInp {
+            border-radius: 12px;
+            border: none;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+            .signupInp:focus {
+                outline: none;
+                box-shadow: 0 0 15px #ffdd59;
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+
+        .signupBtn {
+            background: linear-gradient(90deg, #ff758c, #ff7eb3);
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .signupBtn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 20px rgba(255, 125, 193, 0.5);
+            }
+
+        a.text-white {
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        }
+
+            a.text-white:hover {
+                color: #ffdd59 !important;
+            }
+
+        /* Scroll Animations */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .logsign-container {
+                padding: 50px 15px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">Tech Shop</a>
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="nav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Signup.html">Signup</a></li>
+                    <li class="nav-item" id="navLogout" style="display:none;"><a class="nav-link" href="#" id="logoutLink">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Signup Form -->
+    <div class="logsign-container">
+        <form id="signupForm" class="needs-validation logsign animate__animated animate__fadeInUp" novalidate>
+            <div class="card shadow signupCard">
+                <div class="card-body">
+                    <h2 class="text-center mb-3 pb-2">Signup</h2>
+
+                    <p class="form-label text-white">Enter Your Name :</p>
+                    <input type="text" class="form-control mb-3 signupInp bg-light text-black" id="signupName" placeholder="Enter Your Name" required>
+
+                    <p class="form-label text-white">Enter Your Email :</p>
+                    <input type="email" class="form-control mb-3 signupInp bg-light text-black" id="signupEmail" placeholder="Enter Your Email" required>
+
+                    <p class="form-label text-white">Create Password :</p>
+                    <input type="password" class="form-control mb-3 signupInp bg-light text-black" id="signupPassword" placeholder="Create Password" required>
+
+                    <button type="submit" class="btn text-white w-100 mt-3 signupBtn">Create Account</button>
+
+                    <p class="text-center mt-3 text-white">
+                        Already have an account? <a href="login.html" class="text-white">Login</a>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const signupForm = document.getElementById('signupForm');
+
+        signupForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (!name || !email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const res = await fetch('https://techshopapi.onrender.com/api/User', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                    const data = await res.json();
+                if (res.ok) {
+                    console.log(data.message);
+                    alert(data.message);
+                    //window.location.href = 'login.html';
+                } else {
+                    alert(data.message || 'Signup failed');
+                }
+            } catch (err) {
+                alert('Error connecting to server');
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>
